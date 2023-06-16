@@ -40,11 +40,19 @@ def register():
         flash(f'Account created for {form.username.data}!','success')
         return redirect(url_for('home'))
     logging.debug("form not validated")
-    return render_template('register.html', title="Login", form=form)
+    return render_template('register.html', title="Register", form=form)
 
-@app.route("/login")
+@app.route("/login" , methods=['GET', 'POST'])
 def login():
     form = LoginForm()
+    if form.validate_on_submit():
+        logging.debug("form validated")
+        if form.email.data == "admin@blog.com" and form.password.data == "admin123":
+            flash(f'Successfully logged in!', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash(f'Login unsuccessful: please check username and password!', 'danger')
+    logging.debug("form not validated")
     return render_template('login.html', title="Login", form=form)
 
 
