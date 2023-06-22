@@ -9,6 +9,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+# to prettify "please login" message thrown by login manager
+login_manager.login_message_category = "danger"
 
 # create all tables
 from on_blog import models

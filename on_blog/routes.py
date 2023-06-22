@@ -1,5 +1,5 @@
-from flask import render_template, flash, redirect, url_for
-from flask_login import login_user, current_user, logout_user
+from flask import render_template, flash, redirect, url_for, request
+from flask_login import login_user, current_user, logout_user, login_required
 
 import logging
 
@@ -63,18 +63,31 @@ def login():
 
     if form.validate_on_submit():
         logging.debug("form validated")
+
+        # check if email exists in db
         user = User.query.filter_by(email = form.email.data).first()
+        
         if user and bcrypt.check_password_hash(user.password, form.password.data):
+
+            # logging in
             login_user(user = user, remember = form.remember.data)
-            return redirect(url_for('home'))
+
+            # login and returning to page requesting login
+            request_from_page = request.args.get('next')
+            logging.debug(f'request from page {request_from_page}')
+            return redirect(request_from_page) if request_from_page else redirect(url_for('home'))
         else:
             flash(f'Login unsuccessful: please check email and password!', 'danger')
     logging.debug("form not validated")
-    flash(f'Login unsuccessful')
     return render_template('login.html', title="Login", form=form)
 
 @app.route("/logout" , methods=['GET'])
 def logout():
     logout_user()
     return redirect(url_for('home'))
+
+@app.route("/account" , methods=['GET'])
+@login_required
+def account():
+    return render_template('account.html', title="Account")
 
