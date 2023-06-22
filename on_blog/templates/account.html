@@ -1,4 +1,50 @@
 {% extends "layout.html" %}
 {% block content %}
-  <h1>{{current_user.username}}</h1>
+  <div class="content-section">
+    <div class="d-flex">
+      <div class="flex-shrink-0">
+        <img class="img-fluid rounded-circle account-img" src="{{image_file}}" alt="User profile image">
+      </div>
+      <div class="flex-grow-1 ms-3 mt-auto mb-auto">
+        <h2 class="media-heading">{{current_user.username}}</h2>
+        <p class="text-secondary">{{current_user.email}}</p>
+      </div>
+    </div>
+      <form method="POST" action="">
+          {{form.hidden_tag()}}
+          <fieldset class="form-group">
+              <legend class="border-bottom mb-4"> Account Info</legend>
+              <div class="form-group">
+                  {{ form.username.label(class="form-control-label") }}
+                  {% if form.username.errors %}
+                      {{ form.username(class = "form-control form-control-lg is-invalid")}}
+                      <div class="invalid-feedback">
+                          {% for error in form.username.errors %}
+                              <span>{{error}}</span>
+                          {% endfor %}
+                      </div>
+                  {% else %}
+                      {{form.username(class="form-control form-control-lg")}}
+                  {% endif %}
+              </div>
+
+              <div class="form-group">
+                  {{ form.email.label(class="form-control-label") }}
+                  {% if form.email.errors %}
+                      {{ form.email(class = "form-control form-control-lg is-invalid")}}
+                      <div class="invalid-feedback">
+                          {% for error in form.email.errors %}
+                              <span>{{error}}</span>
+                          {% endfor %}
+                      </div>
+                  {% else %}
+                      {{form.email(class="form-control form-control-lg")}}
+                  {% endif %}
+              </div>
+          </fieldset>
+          <div class="form-group pt-2">
+              {{form.submit(class="btn btn-primary")}}
+          </div>
+      </form>
+  </div>
 {% endblock content %}

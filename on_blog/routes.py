@@ -5,7 +5,7 @@ import logging
 
 from on_blog import app, bcrypt, db
 from on_blog.models import User, Post
-from on_blog.forms import LoginForm, RegistrationForm
+from on_blog.forms import LoginForm, RegistrationForm, UpdateAccountForm
 
 logging.basicConfig(level="DEBUG")
 
@@ -66,7 +66,7 @@ def login():
 
         # check if email exists in db
         user = User.query.filter_by(email = form.email.data).first()
-        
+
         if user and bcrypt.check_password_hash(user.password, form.password.data):
 
             # logging in
@@ -86,8 +86,20 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
-@app.route("/account" , methods=['GET'])
+@app.route("/account" , methods=['GET', 'POST'])
 @login_required
 def account():
-    return render_template('account.html', title="Account")
+    form = UpdateAccountForm()
+    if form.validate_on_submit():
+        # updating user details
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash("Your profile was updated successfully!!!", category='success')
+        return redirect(url_for('account'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+    user_image = url_for('static', filename = 'profile_pics/'+ current_user.image_file)
+    return render_template('account.html', title="Account", image_file = user_image, form = form)
 
