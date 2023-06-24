@@ -1,5 +1,9 @@
+import os
+import secrets
+
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import login_user, current_user, logout_user, login_required
+from PIL import Image
 
 import logging
 
@@ -86,14 +90,50 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
+def save_picture_to_db(form_pic):
+    name_hex = secrets.token_hex(8)
+    # form.picture has data form.picture.data has filename
+    _, f_ext = os.path.splitext(form_pic.filename)
+    pic_name = name_hex + f_ext
+    pic_path = os.path.join(app.root_path, 'static/profile_pics', pic_name)
+
+    # resizing image
+    output_size = (125,125)
+    profile_pic = Image.open(form_pic)
+    profile_pic.thumbnail(output_size)
+
+
+    profile_pic.save(pic_path)
+    return pic_name
+
+def delete_picture(prev_image_name):
+    pic_path = os.path.join(app.root_path, 'static/profile_pics')
+    if os.path.exists(pic_path + '/' + prev_image_name):
+        # file exists, delete it
+        os.remove(pic_path + '/' + prev_image_name)
+        return "file removed"
+    return "file was not removed"
+
+
+
 @app.route("/account" , methods=['GET', 'POST'])
 @login_required
 def account():
     form = UpdateAccountForm()
     if form.validate_on_submit():
+        logging.debug("form validated")
         # updating user details
+        if form.picture.data is not None:
+            prev_image_name = current_user.image_file
+            logging.debug(f"picture exists: {prev_image_name}")
+            pic_name = save_picture_to_db(form.picture.data)
+            current_user.image_file = pic_name
+            if prev_image_name != 'default.jpeg':
+                inf = delete_picture(prev_image_name)
+                logging.debug(f'prev image del')
         current_user.username = form.username.data
         current_user.email = form.email.data
+        logging.debug("user data about to be updated")
         db.session.commit()
         flash("Your profile was updated successfully!!!", category='success')
         return redirect(url_for('account'))
