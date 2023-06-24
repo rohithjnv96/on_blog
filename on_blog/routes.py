@@ -9,29 +9,15 @@ import logging
 
 from on_blog import app, bcrypt, db
 from on_blog.models import User, Post
-from on_blog.forms import LoginForm, RegistrationForm, UpdateAccountForm
+from on_blog.forms import LoginForm, RegistrationForm, UpdateAccountForm, PostForm
 
 logging.basicConfig(level="DEBUG")
-
-postz = [
-    {
-        'author': 'corey qedcsx',
-        'title': 'blog post 1',
-        'content': 'First post',
-        'date_posted': 'april 13,1222'
-    },
-    {
-        'author': 'corey qedcsx 2',
-        'title': 'blog post 2',
-        'content': 'Second post',
-        'date_posted': 'april 16,1222'
-    }
-]
 
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template("home.html", postz=postz, title="ebvhls")
+    postz = Post.query.all()
+    return render_template("home.html", postz=postz, title="Home Page")
 
 @app.route("/about")
 def about():
@@ -142,4 +128,22 @@ def account():
         form.email.data = current_user.email
     user_image = url_for('static', filename = 'profile_pics/'+ current_user.image_file)
     return render_template('account.html', title="Account", image_file = user_image, form = form)
+
+@app.route('/post/new', methods=['POST', 'GET'])
+@login_required
+def new_post():
+    form = PostForm()
+    # id, title, time, content, user_id
+    if form.validate_on_submit():
+        title = form.title.data
+        content = form.content.data
+        post = Post(title=title, content=content, author=current_user)
+        db.session.add(post)
+        db.session.commit()
+        flash("Your post has been created", category="success")
+        return redirect(url_for('home'))
+    return render_template('create_post.html', title="New Post", form = form)
+
+
+
 

@@ -25,6 +25,7 @@
               </div>
               <span class="navbar-nav ms-auto">
                   {% if current_user.is_authenticated %}
+                    <a class="nav-item nav-link" href="{{ url_for('new_post')}}"> Add Post </a>
                     <a class="nav-item nav-link" href="{{ url_for('account')}}">Account </a>
                     <a class="nav-item nav-link" href="{{ url_for('logout')}}">Logout </a>
                   {% else %}
