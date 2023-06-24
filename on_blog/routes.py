@@ -16,8 +16,9 @@ logging.basicConfig(level="DEBUG")
 @app.route("/")
 @app.route("/home")
 def home():
-    postz = Post.query.all()
-    return render_template("home.html", postz=postz, title="Home Page")
+    page_no = request.args.get('page', default=1, type=int)
+    posts = Post.query.order_by(Post.time.desc()).paginate(per_page=5, page=page_no)
+    return render_template("home.html", posts=posts, title="Home Page")
 
 @app.route("/about")
 def about():
@@ -179,4 +180,11 @@ def delete_post(post_id):
         db.session.commit()
         flash("This post has been deleted successfully", category='success')
     return redirect(url_for('home'))
+
+@app.route("/user/<string:username>")
+def user_posts(username):
+    page_no = request.args.get('page', default=1, type=int)
+    user = User.query.filter_by(username=username).first_or_404()
+    posts = Post.query.filter_by(author=user).order_by(Post.time.desc()).paginate(per_page=5, page=page_no)
+    return render_template("user_posts.html", posts=posts, title="User Posts", user=user)
 
