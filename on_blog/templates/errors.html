@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+    {% block content %}
+    <div class="content-section">
+      {% if error_code == 404 %}
+        <h2>Oops. Page not found ({{error_code}})</h2>
+        <p>The page you are trying to access does not exist. PLease try accessing different location</p>
+      {% elif error_code == 403 %}
+        <h2>You don't have permission to do that ({{error_code}})</h2>
+        <p>Please check your account and try again</p>
+      {% elif error_code == 500 %}
+        <h2>Oops. Something went wrong ({{error_code}})</h2>
+        <p>We are experiencing trouble at aor end. Please try again after sometime</p>
+      {% endif %}
+    </div>
+    {% endblock content%}
