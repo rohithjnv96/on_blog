@@ -41,13 +41,13 @@
                 {{form.submit(class="btn btn-primary")}}
             </div>
             <small class="text-muted">
-                    <a href="{{url_for('reset_password')}}">Forgot Password?</a>
+                    <a href="{{url_for('users.reset_password')}}">Forgot Password?</a>
             </small>
         </form>
     </div>
     <div class="border-top pt-2">
         <small class="text-muted">
-            Create an account? <a class="ml-2" href="{{url_for('register')}}">Sign Up Now</a>
+            Create an account? <a class="ml-2" href="{{url_for('users.register')}}">Sign Up Now</a>
         </small>
     </div>
     {% endblock content%}

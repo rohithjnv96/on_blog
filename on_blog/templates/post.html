@@ -9,11 +9,11 @@
         <div class='col-sm-8 col-lg-9'>
             <div class="media-body">
                 <div class="article-metadata">
-                    <a class="mr-2" href="{{url_for('user_posts', username=post.author.username)}}">{{ post.author.username }}</a>
+                    <a class="mr-2" href="{{url_for('posts.user_posts', username=post.author.username)}}">{{ post.author.username }}</a>
                     <small class="text-muted">{{ post.time.strftime('%Y-%m-%d') }}</small>
                     {% if post.author == current_user %}
                     <div class="mt-2 mb-2">
-                        <a class="btn btn-primary" href="{{url_for('update_post', post_id = post.id)}}">Update</a>
+                        <a class="btn btn-primary" href="{{url_for('posts.update_post', post_id = post.id)}}">Update</a>
                         <!-- Button trigger modal -->
                         <button class="btn btn-danger" data-bs-target="#DeleteConfirmModal" data-bs-toggle="modal"
                                 href="#" type="button">Delete</button>
@@ -35,7 +35,7 @@
                                 <div class="modal-footer">
                                     <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Close</button>
                                     <!-- Delete the post call -->
-                                    <form action="{{url_for('delete_post', post_id = post.id)}}" method="POST">
+                                    <form action="{{url_for('posts.delete_post', post_id = post.id)}}" method="POST">
                                         <input class="btn btn-danger" type="submit" value="Delete">
                                     </form>
                                 </div>
