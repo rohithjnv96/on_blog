@@ -1,6 +1,7 @@
 from datetime import datetime
-from on_blog import db, login_manager, app
+from on_blog import db, login_manager
 from flask_login import UserMixin
+from flask import current_app
 from itsdangerous import TimedSerializer
 
 # to store userid in the session
@@ -22,14 +23,14 @@ class User(db.Model, UserMixin):
         return f'User("{self.username}", "{self.email}", "{self.image_file}")'
 
     def get_reset_token(self):
-        s = TimedSerializer(app.config['SECRET_KEY'])
+        s = TimedSerializer(current_app.config['SECRET_KEY'])
         token = s.dumps({'user_id': self.id})
         return token
 
     @staticmethod
     def verify_reset_token(token, expires_in=300):
         try:
-            s = TimedSerializer(app.config['SECRET_KEY'])
+            s = TimedSerializer(current_app.config['SECRET_KEY'])
             payload = s.loads(token, max_age=expires_in)
             user_id = payload['user_id']
         except Exception as e:
@@ -39,7 +40,7 @@ class User(db.Model, UserMixin):
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    # no () for utcnow cause we are sending it as a variable
+    # no () for utcnow because we are sending it as a variable
     time = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
     content = db.Column(db.Text, nullable = False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable = False)

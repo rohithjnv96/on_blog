@@ -4,8 +4,9 @@ import secrets
 from PIL import Image
 from flask import url_for
 from flask_mail import Message
+from flask import current_app
 
-from on_blog import mail, app
+from on_blog import mail
 from on_blog.models import User
 
 
@@ -14,7 +15,7 @@ def save_picture_to_db(form_pic):
     # form.picture has data form.picture.data has filename
     _, f_ext = os.path.splitext(form_pic.filename)
     pic_name = name_hex + f_ext
-    pic_path = os.path.join(app.root_path, 'static/profile_pics', pic_name)
+    pic_path = os.path.join(current_app.root_path, 'static/profile_pics', pic_name)
 
     # resizing image
     output_size = (125,125)
@@ -37,7 +38,7 @@ def send_reset_email(user):
 
 
 def delete_picture(prev_image_name):
-    pic_path = os.path.join(app.root_path, 'static/profile_pics')
+    pic_path = os.path.join(current_app.root_path, 'static/profile_pics')
     if os.path.exists(pic_path + '/' + prev_image_name):
         # file exists, delete it
         os.remove(pic_path + '/' + prev_image_name)
