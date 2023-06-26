@@ -1,6 +1,7 @@
 from datetime import datetime
-from on_blog import db, login_manager
+from on_blog import db, login_manager, app
 from flask_login import UserMixin
+from itsdangerous import TimedSerializer
 
 # to store userid in the session
 @login_manager.user_loader
@@ -19,6 +20,21 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f'User("{self.username}", "{self.email}", "{self.image_file}")'
+
+    def get_reset_token(self):
+        s = TimedSerializer(app.config['SECRET_KEY'])
+        token = s.dumps({'user_id': self.id})
+        return token
+
+    @staticmethod
+    def verify_reset_token(token, expires_in=300):
+        try:
+            s = TimedSerializer(app.config['SECRET_KEY'])
+            payload = s.loads(token, max_age=expires_in)
+            user_id = payload['user_id']
+        except Exception as e:
+            return None
+        return User.query.get(user_id)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)

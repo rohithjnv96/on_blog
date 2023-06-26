@@ -2,14 +2,30 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
+from flask_mail import Mail
+from dotenv import load_dotenv
+import os
+
+# Load variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '79d0f69fc13be5944aab2a4e096f501c4a70a426f15c661f0467d276c255d3ff'
+app.config['SECRET_KEY'] = os.environ.get('APP_SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+# mail config
+app.config['MAIL_SERVER']='smtp.gmail.com'
+# app.config['MAIL_PORT'] = 587
+app.config['MAIL_USERNAME'] = os.environ.get('APP_EMAIL')
+app.config['MAIL_PASSWORD'] = os.environ.get('APP_PASSWORD')
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+mail = Mail(app)
 
 # to prettify "please login" message thrown by login manager
 login_manager.login_message_category = "danger"
