@@ -26,11 +26,11 @@ def register():
     # if form is submitted and validated
     if form.validate_on_submit():
         #  generate signed and timed url with token for the payload
-        email_verify_token = get_timed_serialized_token({'email':form.email.data, 'username':form.username.data})
+        email_verify_token = get_timed_serialized_token({'email':str(form.email.data).lower(), 'username':form.username.data})
         tokenized_url = str(url_for('users.set_password', token = str(email_verify_token), _external= True))
 
         # send mail for email verification
-        send_verification_email(form.username.data, form.email.data, tokenized_url)
+        send_verification_email(form.username.data, str(form.email.data).lower(), tokenized_url)
         flash(f'Please use the url sent to the email to set the password, You may close this tab now','success')
     return render_template('register.html', title="Register", form=form)
 
@@ -42,7 +42,7 @@ def set_password(token):
     except Exception as e:
         error_message = f'An error-{type(e).__name__} occurred while processing the request.\n Please make sure that the url is used before it is expired nad not tampered with!!!'
         abort(500, description=error_message)
-    email = data['email']
+    email = (data['email']).lower()
     username = data['username']
 
     # pre-populating the data
@@ -75,7 +75,7 @@ def login():
     if form.validate_on_submit():
 
         # check if email exists in db
-        user = User.query.filter_by(email = form.email.data).first()
+        user = User.query.filter_by(email = form.email.data.lower()).first()
 
         if user and bcrypt.check_password_hash(user.password, form.password.data):
 
@@ -107,9 +107,9 @@ def account():
             pic_name = save_picture_to_db(form.picture.data)
             current_user.image_file = pic_name
             if prev_image_name != 'default.jpeg':
-                info = delete_picture(prev_image_name)
+                delete_picture(prev_image_name)
         current_user.username = form.username.data
-        current_user.email = form.email.data
+        # current_user.email = form.email.data.lower()
         db.session.commit()
         flash("Your profile was updated successfully!!!", category='success')
         return redirect(url_for('users.account'))
@@ -125,7 +125,7 @@ def reset_password():
         redirect(url_for('main.home'))
     form = RequestResetForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email = form.email.data).first()
+        user = User.query.filter_by(email = form.email.data.lower()).first()
         send_reset_email(user)
         flash('An email has been sent with instructions to reset the password', category='info')
         return redirect(url_for('users.login'))

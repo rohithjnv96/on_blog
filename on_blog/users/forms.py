@@ -63,7 +63,7 @@ class UpdateAccountForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(max=30, min=5)])
 
     #email validators - not emplty and should follow email format
-    email = StringField('Email', validators=[DataRequired(), Email()])
+    email = StringField('Email', validators=[DataRequired(), Email()], render_kw={'readonly': True})
 
     # image field validator
     picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpeg', 'png'])])
