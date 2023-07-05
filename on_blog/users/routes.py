@@ -128,7 +128,7 @@ def reset_password():
     if form.validate_on_submit():
         user = User.query.filter_by(email = form.email.data.lower()).first()
         send_reset_email(user)
-        flash('An email has been sent with instructions to reset the password', category='info')
+        flash('An email has been sent with instructions to reset the password, you may close this tab now', category='info')
         return redirect(url_for('users.login'))
     return render_template('request_reset.html', form = form, title='Reset Password')
 
@@ -138,7 +138,7 @@ def token_verify(token):
         redirect(url_for('main.home'))
     user = User.verify_reset_token(token)
     if user is None:
-        flash("Recieved either invalid or expired token", category='warning')
+        flash("Received either invalid or expired token", category='warning')
         return redirect(url_for('users.reset_password'))
     form = ResetPasswordForm()
     if form.validate_on_submit():

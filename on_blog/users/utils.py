@@ -19,7 +19,7 @@ def save_picture_to_db(form_pic):
     pic_path = os.path.join(current_app.root_path, 'static/profile_pics', pic_name)
 
     # resizing image
-    output_size = (125,125)
+    output_size = (350,350)
     profile_pic = Image.open(form_pic)
     profile_pic.thumbnail(output_size)
 

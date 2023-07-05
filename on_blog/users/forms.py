@@ -26,7 +26,7 @@ class RegistrationForm(FlaskForm):
             raise ValidationError("Username is taken. Please choose a different one")
 
     def validate_email(self, email):
-        user = User.query.filter_by(email = email.data).first()
+        user = User.query.filter_by(email = email.data.lower()).first()
         if user:
             raise ValidationError("That email is taken. Please choose a different one")
 
@@ -41,7 +41,7 @@ class EmailVerifiedSetPassword(FlaskForm):
     submit = SubmitField('Sign Up')
 
     def validate_email(self, email):
-        user = User.query.filter_by(email = email.data).first()
+        user = User.query.filter_by(email = email.data.lower()).first()
         if user:
             raise ValidationError("That email is taken. Please choose a different one")
 
@@ -66,7 +66,7 @@ class UpdateAccountForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()], render_kw={'readonly': True})
 
     # image field validator
-    picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpeg', 'png'])])
+    picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'heic', 'webp'])])
 
     submit = SubmitField('Update')
 
@@ -78,7 +78,7 @@ class UpdateAccountForm(FlaskForm):
 
     def validate_email(self, email):
         if current_user.email != email.data:
-            user = User.query.filter_by(email = email.data).first()
+            user = User.query.filter_by(email = email.data.lower()).first()
             if user:
                 raise ValidationError("That email is taken. Please choose a different one")
 
@@ -88,7 +88,7 @@ class RequestResetForm(FlaskForm):
     submit = SubmitField('Request password reset ')
 
     def validate_email(self, email):
-        user = User.query.filter_by(email = email.data).first()
+        user = User.query.filter_by(email = email.data.lower()).first()
         if user is None:
             raise ValidationError("No account with that email found")
 
