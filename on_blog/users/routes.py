@@ -1,14 +1,18 @@
 import logging
 
-from flask import Blueprint, redirect, url_for, flash, render_template, request
+from flask import Blueprint, redirect, url_for, flash, render_template, request, current_app, abort
 from flask_login import current_user, login_user, logout_user, login_required
+from itsdangerous import URLSafeTimedSerializer
 
 from on_blog import bcrypt, db
-from on_blog.models import User, Post
-from on_blog.users.forms import RegistrationForm, LoginForm, ResetPasswordForm, RequestResetForm, UpdateAccountForm
-from on_blog.users.utils import send_reset_email, save_picture_to_db, delete_picture
+from on_blog.models import User
+from on_blog.users.forms import RegistrationForm, LoginForm, ResetPasswordForm, RequestResetForm, UpdateAccountForm, \
+    EmailVerifiedSetPassword
+from on_blog.users.utils import send_reset_email, save_picture_to_db, delete_picture, send_verification_email, get_timed_serialized_token, get_data_from_timed_serialized_token
+
 
 users = Blueprint('users', __name__)
+
 
 @users.route("/register", methods=['GET', 'POST'])
 def register():
@@ -16,17 +20,49 @@ def register():
 
     # if user id already logged in
     if current_user.is_authenticated:
+        flash(f'You have already logged in!!!', 'info')
         return redirect(url_for('main.home'))
 
+    # if form is submitted and validated
     if form.validate_on_submit():
+        #  generate signed and timed url with token for the payload
+        email_verify_token = get_timed_serialized_token({'email':form.email.data, 'username':form.username.data})
+        tokenized_url = str(url_for('users.set_password', token = str(email_verify_token), _external= True))
+
+        # send mail for email verification
+        send_verification_email(form.username.data, form.email.data, tokenized_url)
+        flash(f'Please use the url sent to the email to set the password, You may close this tab now','success')
+    return render_template('register.html', title="Register", form=form)
+
+@users.route('/set_password/<token>', methods=['GET', 'POST'])
+def set_password(token):
+    # unload data from payload
+    try:
+        data = get_data_from_timed_serialized_token(token)
+    except Exception as e:
+        error_message = f'An error-{type(e).__name__} occurred while processing the request.\n Please make sure that the url is used before it is expired nad not tampered with!!!'
+        abort(500, description=error_message)
+    email = data['email']
+    username = data['username']
+
+    # pre-populating the data
+    form = EmailVerifiedSetPassword()
+    form.email.data = email
+    # check if user is loggen in already
+    if current_user.is_authenticated:
+        flash("Has already loggen in with different account", "info")
+        return redirect(url_for('main.home'))
+    # if form is submitted and validated
+    if form.validate_on_submit():
+        # encrypt the password
         hashed_pw = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
-        user = User(username = form.username.data, email = form.email.data, password = hashed_pw)
+        # save user to db
+        user = User(username = username, email = email, password = hashed_pw)
         db.session.add(user)
         db.session.commit()
-        # success - is bootstrap part
-        flash(f'You account has been created successfully, you are now able to login','success')
-        return redirect(url_for('users.login'))
-    return render_template('register.html', title="Register", form=form)
+        flash("User account created successfully!! \n Please login to continue...", 'info')
+        return  redirect(url_for("users.login"))
+    return render_template('set_password.html', title='Set Password', form = form)
 
 @users.route("/login" , methods=['GET', 'POST'])
 def login():

@@ -5,6 +5,7 @@ from PIL import Image
 from flask import url_for
 from flask_mail import Message
 from flask import current_app
+from itsdangerous import URLSafeTimedSerializer
 
 from on_blog import mail
 from on_blog.models import User
@@ -37,6 +38,27 @@ def send_reset_email(user):
     mail.send(msg)
 
 
+def send_verification_email(username, email, token):
+    message = Message(
+        subject = "Welcome to on_blog! Verify Your Email",
+        sender = ('on-Blog website', 'no-reply-on_blog@gmail.com'),
+        recipients = [str(email)],
+        body = f'''Hello {username},
+
+Thank you for registering with on_blog! To complete your registration and verify your email address, please click the following link:
+
+{token}
+
+If you did not sign up for on_blog, please ignore this email.
+
+Note: This link will expire in 5 minuted for security purposes. If the link has expired, please visit our website and request a new verification email.
+
+Thank you,
+The on_blog Team''')
+    mail.send(message)
+    return None
+
+
 def delete_picture(prev_image_name):
     pic_path = os.path.join(current_app.root_path, 'static/profile_pics')
     if os.path.exists(pic_path + '/' + prev_image_name):
@@ -44,3 +66,14 @@ def delete_picture(prev_image_name):
         os.remove(pic_path + '/' + prev_image_name)
         return "file removed"
     return "file was not removed"
+
+def get_timed_serialized_token(payload):
+    s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    token = s.dumps(payload)
+    return token
+
+def get_data_from_timed_serialized_token(token):
+    s = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    data = s.loads(token, max_age=300)
+    return data
+

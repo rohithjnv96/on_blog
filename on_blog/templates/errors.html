@@ -7,9 +7,12 @@
       {% elif error_code == 403 %}
         <h2>You don't have permission to do that ({{error_code}})</h2>
         <p>Please check your account and try again</p>
+      {% elif message != None %}
+        <h2>Oops. Something went wrong ({{error_code}})</h2>
+        <p>{{ message }}</p>
       {% elif error_code == 500 %}
         <h2>Oops. Something went wrong ({{error_code}})</h2>
-        <p>We are experiencing trouble at aor end. Please try again after sometime</p>
+        <p>We are experiencing trouble at our end. Please try again after sometime</p>
       {% endif %}
     </div>
     {% endblock content%}

@@ -14,11 +14,11 @@ class RegistrationForm(FlaskForm):
     #email validators - not emplty and should follow email format
     email = StringField('Email', validators=[DataRequired(), Email()])
 
-    #password validator - not empty
-    password = PasswordField("Password", validators=[DataRequired()])
-    confirm_password = PasswordField("Confirm Password", validators=[DataRequired(), EqualTo('password')])
+    # #password validator - not empty
+    # password = PasswordField("Password", validators=[DataRequired()])
+    # confirm_password = PasswordField("Confirm Password", validators=[DataRequired(), EqualTo('password')])
 
-    submit = SubmitField('Sign Up')
+    submit = SubmitField('Verify Email')
 
     def validate_username(self, username):
         user = User.query.filter_by(username = username.data).first()
@@ -29,6 +29,23 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email = email.data).first()
         if user:
             raise ValidationError("That email is taken. Please choose a different one")
+
+class EmailVerifiedSetPassword(FlaskForm):
+    # email validators - not emplty and should follow email format
+    email = StringField('Email', validators=[DataRequired(), Email()], render_kw={'disabled': True})
+
+    #password validator - not empty
+    password = PasswordField("Password", validators=[DataRequired()])
+    confirm_password = PasswordField("Confirm Password", validators=[DataRequired(), EqualTo('password')])
+
+    submit = SubmitField('Sign Up')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email = email.data).first()
+        if user:
+            raise ValidationError("That email is taken. Please choose a different one")
+
+
 
 
 class LoginForm(FlaskForm):

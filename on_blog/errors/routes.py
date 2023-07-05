@@ -1,4 +1,7 @@
-from flask import Blueprint, render_template
+import logging
+logging.basicConfig(level='DEBUG')
+
+from flask import Blueprint, render_template, request
 
 errors = Blueprint('errors', __name__)
 
@@ -12,5 +15,7 @@ def error_403(error):
 
 @errors.app_errorhandler(500)
 def error_500(error):
-    return render_template('errors.html', error_code=500), 500
+    message =  error.description
+    logging.debug(f' HA AH HA AH HA AH  {message}')
+    return render_template('errors.html', error_code=500, message=message), 500
 
