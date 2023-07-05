@@ -21,7 +21,7 @@
             </button>
 
               <div class="collapse navbar-collapse" id="navbarText">
-                  <ul class="navbar-nav mr-auto">
+                  <ul class="navbar-nav ml-auto">
                       {% if current_user.is_authenticated %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('posts.new_post')}}"> Add Post </a>
@@ -49,7 +49,7 @@
 
       <main role="main" class="container">
         <div class="row">
-          <div class="col-md-8">
+          <div class="col-md-9">
             <!-- with_categories - allows us to grab success param from run.py -->
             {% with messages = get_flashed_messages(with_categories=True)%}
                 {% if messages %}
@@ -62,7 +62,7 @@
             {% endwith %}
             {% block content %}{% endblock %}
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
             <div class="content-section">
               <h3>Our Sidebar</h3>
               <p class='text-muted'>Latest happenings in our community

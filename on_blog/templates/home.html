@@ -14,9 +14,9 @@
                         post.author.username }}</a>
                     <small class="text-muted">{{ post.time.strftime('%Y-%m-%d') }}</small>
                 </div>
-                <h2><a class="article-title" href="{{url_for('posts.post', post_id = post.id)}}">{{ post.title }}</a>
+                <h2><a class="article-title h3" href="{{url_for('posts.post', post_id = post.id)}}">{{ post.title }}</a>
                 </h2>
-                <p class="article-content mt-4 ">{{ post.content }}</p>
+                <p class="article-content mt-3 text-justify">{{ post.content }}</p>
             </div>
         </div>
     </div>
