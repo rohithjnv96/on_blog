@@ -21,7 +21,8 @@
     </div>
 </article>
 {% endfor %}
-{% for page_num in posts.iter_pages(left_edge=1, left_current=1, right_current=1, right_edge=1) %}
+<div class="mt-2 mb-3">
+    {% for page_num in posts.iter_pages(left_edge=1, left_current=1, right_current=1, right_edge=1) %}
     {% if page_num %}
         {% if page_num==posts.page %}
             <a class="btn btn-primary" href="{{url_for('posts.user_posts', username=user.username, page=page_num)}}">{{page_num}}</a>
@@ -33,4 +34,5 @@
        ...
     {% endif %}
 {% endfor %}
+</div>
 {% endblock content %}
