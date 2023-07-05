@@ -34,3 +34,7 @@ tqdm @ file:///home/conda/feedstock_root/build_artifacts/tqdm_1677948868469/work
 urllib3 @ file:///home/conda/feedstock_root/build_artifacts/urllib3_1678635778344/work
 Werkzeug==2.3.6
 zstandard==0.19.0
+
+WTForms~=3.0.1
+Pillow~=9.5.0
+python-dotenv~=1.0.0

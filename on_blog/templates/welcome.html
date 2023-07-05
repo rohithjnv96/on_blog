@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="content-section">
+    <h1 class="h1">Welcome to online blogging website</h1>
+    <p>Please continue to <a href="{{ url_for('users.login') }}">Login</a> to explore all features... </a>
+        <br>
+        or
+        <br>
+        If you dont have an account <a class="ml-2" href="{{url_for('users.register')}}">Sign Up</a> now!!!
+    </p>
+</div>
+{% endblock content%}

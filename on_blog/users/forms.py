@@ -32,7 +32,7 @@ class RegistrationForm(FlaskForm):
 
 class EmailVerifiedSetPassword(FlaskForm):
     # email validators - not emplty and should follow email format
-    email = StringField('Email', validators=[DataRequired(), Email()], render_kw={'disabled': True})
+    email = StringField('Email', validators=[DataRequired(), Email()], render_kw={'readonly': True})
 
     #password validator - not empty
     password = PasswordField("Password", validators=[DataRequired()])

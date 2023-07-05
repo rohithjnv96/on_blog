@@ -60,6 +60,7 @@ def new_post():
     return render_template('create_post.html', title="New Post", form = form, legend='Create Post ')
 
 @posts.route("/user/<string:username>")
+@login_required
 def user_posts(username):
     page_no = request.args.get('page', default=1, type=int)
     user = User.query.filter_by(username=username).first_or_404()

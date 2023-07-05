@@ -16,6 +16,7 @@ bcrypt = Bcrypt()
 
 # flask-loging configs
 login_manager = LoginManager()
+# redirects to this page when @login_required is used and user is not authenticated
 login_manager.login_view = 'users.login'
 # to prettify "please-login" message thrown by login manager
 login_manager.login_message_category = "danger"
