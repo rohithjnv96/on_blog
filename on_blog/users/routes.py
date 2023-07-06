@@ -100,6 +100,7 @@ def logout():
 @login_required
 def account():
     form = UpdateAccountForm()
+    form.email.render_kw = {'value':current_user.email, 'readonly': True, 'style':"cursor: not-allowed"}
     if form.validate_on_submit():
         # updating user details
         logging.debug('form pic data: {form.picture.data}')
